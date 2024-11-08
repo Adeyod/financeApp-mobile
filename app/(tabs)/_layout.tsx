@@ -1,37 +1,71 @@
-import { Tabs } from 'expo-router';
 import React from 'react';
-
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
+import { Tabs } from 'expo-router';
+import { Ionicons, FontAwesome6, Entypo } from '@expo/vector-icons';
 import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+const TabsLayout = () => {
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-      }}>
+    <Tabs>
       <Tabs.Screen
-        name="index"
+        name="profile"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name="person"
+              size={24}
+              color={focused ? Colors.colors.secondary : Colors.colors.primary}
+            />
           ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="index"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+          title: '',
+          tabBarLabel: 'Home',
+          tabBarIcon: ({ focused }) => {
+            return (
+              <Ionicons
+                name="home"
+                size={24}
+                color={
+                  focused ? Colors.colors.secondary : Colors.colors.primary
+                }
+              />
+            );
+          },
+        }}
+      />
+      <Tabs.Screen
+        name="transactions"
+        options={{
+          tabBarLabel: 'Transactions',
+          tabBarIcon: (focused) => (
+            <FontAwesome6
+              name="naira-sign"
+              size={24}
+              color={focused ? Colors.colors.secondary : Colors.colors.primary}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="accounts"
+        options={{
+          headerShown: false,
+          tabBarLabel: 'Accounts',
+          tabBarIcon: (focused) => (
+            <Entypo
+              name="wallet"
+              size={24}
+              color={focused ? Colors.colors.secondary : Colors.colors.primary}
+            />
           ),
         }}
       />
     </Tabs>
   );
-}
+};
+
+export default TabsLayout;

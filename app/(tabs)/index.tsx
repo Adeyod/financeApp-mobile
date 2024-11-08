@@ -1,70 +1,188 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import HeaderRight from '@/components/Headers/HeaderRight';
+import { Colors } from '@/constants/Colors';
+import { AccountState, UserState } from '@/constants/types';
+import useApi from '@/hooks/apiCalls';
+import axios from 'axios';
+import { Link, router, useNavigation, useRouter } from 'expo-router';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAccountsSuccess } from '../redux/accountSlice';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import { Feather, FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { formattedNumber } from '@/hooks/functions';
+import TransferCard from '@/components/Home/TransferCard';
+import AccountsSection from '@/components/Home/AccountsSection';
+import BillsAndPurchaseSection from '@/components/Home/BillsAndPurchaseSection';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const HomeScreen = () => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const router = useRouter();
 
-export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const [loading, setLoading] = useState(true);
+  const [showBalance, setShowBalance] = useState(false);
+  const { getUserAccounts } = useApi();
+  const { currentUser } = useSelector(
+    (state: { user: UserState }) => state.user
   );
-}
+
+  const { accountDetails } = useSelector(
+    (state: { account: AccountState }) => state.account
+  );
+
+  const toggleShowBalance = () => {
+    setShowBalance(!showBalance);
+  };
+
+  console.log('accountDetails:', accountDetails?.accounts);
+
+  const totalBalance = accountDetails?.accounts?.reduce((total, account) => {
+    return total + parseFloat(account?.balance);
+  }, 0);
+
+  const findUserAccounts = async () => {
+    try {
+      const response = await getUserAccounts();
+      if (response) {
+        console.log('HOME SCREEN:', response.data);
+        dispatch(getAccountsSuccess(response.data));
+        return;
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        Alert.alert(error.response.data.message);
+        console.error(error.response.data.message);
+      } else {
+        console.error('An error occurred:', error);
+        Alert.alert('An error occurred:');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const pushToFundFlow = () => {
+    router.push('/transfers/fundflow');
+  };
+
+  const pushToBank = () => {
+    router.push('/transfers/bank');
+  };
+
+  useEffect(() => {
+    findUserAccounts();
+  }, []);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerStyle: {
+        backgroundColor: Colors.colors.primary,
+      },
+      headerLeft: () => (
+        <View
+          style={{
+            paddingLeft: 15,
+          }}
+        >
+          <Text>I am here</Text>
+        </View>
+      ),
+      headerRight: () => (
+        <HeaderRight profileImageUrl={currentUser?.profile_image?.url} />
+      ),
+    });
+  });
+  return (
+    <View
+      style={{
+        padding: 10,
+      }}
+    >
+      {loading ? (
+        <LoadingSpinner loading={loading} />
+      ) : (
+        <View>
+          {/* ACCOUNT SECTION CARD */}
+          <AccountsSection
+            currentUser={currentUser}
+            toggleShowBalance={toggleShowBalance}
+            showBalance={showBalance}
+            totalBalance={totalBalance}
+          />
+
+          {/* TRANSFER CARD */}
+          <TransferCard
+            pushToFundFlow={pushToFundFlow}
+            pushToBank={pushToBank}
+          />
+
+          {/* BILLING AND PURCHASE */}
+          <BillsAndPurchaseSection />
+        </View>
+      )}
+    </View>
+  );
+};
+
+export default HomeScreen;
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  secondContainerStyle: {
+    display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 8,
+    backgroundColor: Colors.colors.secondary,
+    borderRadius: 10,
+    paddingVertical: 30,
+    paddingHorizontal: 15,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  textStyle: {
+    fontSize: 13,
+    marginVertical: 10,
+    color: 'white',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  linkTextStyle: {
+    fontSize: 13,
+    marginVertical: 10,
+    color: Colors.colors.primary,
+  },
+
+  transferContainerStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 40,
+    marginVertical: 20,
+    backgroundColor: '#FFF8E7',
+    // backgroundColor: '#FAF9F6',
+    paddingVertical: 30,
+    borderRadius: 10,
+  },
+
+  fundFlowStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fundFlowTextStyle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    marginLeft: -40,
+  },
+  fundFlowContainerStyle: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  logoStyle: {
+    backgroundColor: Colors.colors.primary,
+    padding: 10,
+    borderRadius: 10,
   },
 });
