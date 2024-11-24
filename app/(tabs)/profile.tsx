@@ -22,6 +22,7 @@ import RefreshWrapper from '@/components/RefreshWrapper';
 import BlinkingText from '@/components/BlinkingText';
 import LoadingIndicator from '@/components/LoadingIndicator';
 import HeaderRight from '@/components/Headers/HeaderRight';
+import Toast from 'react-native-toast-message';
 
 const Profile = () => {
   const navigation = useNavigation();
@@ -83,7 +84,11 @@ const Profile = () => {
       if (data) {
         console.log('PROFILE IMAGE UPLOAD:', data);
         dispatch(loginSuccess(data.user));
-        Alert.alert(data.message);
+
+        Toast.show({
+          type: 'success',
+          text1: data.message,
+        });
       }
     } catch (error) {
       console.error(error);
@@ -121,13 +126,23 @@ const Profile = () => {
     try {
       const accountData = await getUserAccounts();
       const accountDetails = accountData?.data;
+      // console.log('accountDetails:', accountData);
+
       dispatch(getAccountsSuccess(accountDetails));
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         console.error(error.response.data.message);
+        Toast.show({
+          type: 'error',
+          text1: error.response.data.message,
+        });
         // toast.error(error.response.data.message);
       } else {
         console.error('An error occurred:', error);
+        Toast.show({
+          type: 'error',
+          text1: 'An error occurred:',
+        });
         // toast.error('An error occurred:');
       }
     } finally {

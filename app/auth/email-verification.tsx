@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 const EmailVerification = () => {
   const [pins, setPins] = useState(['', '', '', '', '', '']);
@@ -53,18 +54,27 @@ const EmailVerification = () => {
       console.log(response);
 
       if (response.data.success) {
-        Alert.alert(response.data.message);
+        Toast.show({
+          type: 'success',
+          text1: response.data.message,
+        });
         router.replace('/auth/login');
         return;
       } else {
-        Alert.alert(response.data.message);
-        Alert.alert('I am alerting here');
+        Toast.show({
+          type: 'error',
+          text1: response.data.message,
+        });
+
         return;
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         console.error(error.response.data.message);
-        Alert.alert(error.response.data.message);
+        Toast.show({
+          type: 'error',
+          text1: error.response.data.message,
+        });
         if (
           error.response.data.message ===
           'Verification link has expired. Please request a new one'
@@ -74,7 +84,10 @@ const EmailVerification = () => {
         }
       } else {
         console.error('An error occurred');
-        Alert.alert('An error occurred');
+        Toast.show({
+          type: 'error',
+          text1: 'An error occurred',
+        });
       }
     }
   };

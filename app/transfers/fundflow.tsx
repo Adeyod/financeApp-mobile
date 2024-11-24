@@ -29,6 +29,7 @@ import {
 import { router } from 'expo-router';
 import axios from 'axios';
 import useApi from '@/hooks/apiCalls';
+import Toast from 'react-native-toast-message';
 
 const FundFlow = () => {
   const [loading, setLoading] = useState(false);
@@ -104,7 +105,10 @@ const FundFlow = () => {
         console.log(error);
         error.details.forEach((detail) => {
           console.log(detail.message);
-          Alert.alert(detail.message);
+          Toast.show({
+            type: 'error',
+            text1: detail.message,
+          });
         });
         return;
       }
@@ -115,7 +119,10 @@ const FundFlow = () => {
 
       if (!receivingAccount) {
         console.error('Please select the receiving account');
-        Alert.alert('Please select the receiving account');
+        Toast.show({
+          type: 'error',
+          text1: 'Please select the receiving account',
+        });
       }
 
       const response = await getFundFlowReceivingAccountName(receivingAccount);
@@ -131,10 +138,16 @@ const FundFlow = () => {
       if (axios.isAxiosError(error) && error.response) {
         console.error(error.response.data.message);
         setLogError(error.response.data.message.slice(0, 20));
-        Alert.alert(error.response.data.message);
+        Toast.show({
+          type: 'error',
+          text1: error.response.data.message,
+        });
       } else {
         console.error('An error occurred:', error);
-        Alert.alert('An error occurred:');
+        Toast.show({
+          type: 'error',
+          text1: 'An error occurred:',
+        });
       }
     } finally {
       setIsLoading(false);
@@ -158,24 +171,36 @@ const FundFlow = () => {
         console.log(error);
         error.details.forEach((detail) => {
           console.log(detail.message);
-          Alert.alert(detail.message);
+          Toast.show({
+            type: 'error',
+            text1: detail.message,
+          });
         });
         return;
       }
 
       if (!selectedAccountNumber) {
         console.error('Please select the account to be debited');
-        Alert.alert('Please select the account to be debited');
+        Toast.show({
+          type: 'error',
+          text1: 'Please select the account to be debited',
+        });
         return;
       }
 
       if (!amount) {
-        Alert.alert('Please select transfer amount');
+        Toast.show({
+          type: 'error',
+          text1: 'Please select transfer amount',
+        });
         return;
       }
 
       if (!receivingAccount) {
-        Alert.alert('Please select receiving account number');
+        Toast.show({
+          type: 'error',
+          text1: 'Please select receiving account number',
+        });
         return;
       }
 
@@ -188,10 +213,16 @@ const FundFlow = () => {
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         console.error(error.response.data.message);
-        Alert.alert(error.response.data.message);
+        Toast.show({
+          type: 'error',
+          text1: error.response.data.message,
+        });
       } else {
         console.error('An error occurred:', error);
-        Alert.alert('An error occurred:');
+        Toast.show({
+          type: 'error',
+          text1: 'An error occurred:',
+        });
       }
     } finally {
       setAmLoading(false);

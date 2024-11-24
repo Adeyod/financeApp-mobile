@@ -9,24 +9,38 @@ import React from 'react';
 import { formatDate } from '@/hooks/functions';
 import { TransactionType } from '@/constants/types';
 import { Colors } from '@/constants/Colors';
+import { Link, router } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 
-const SingleTransaction = ({ item }) => {
+type SingleTransactionProps = {
+  transaction: TransactionType;
+};
+
+const SingleTransaction = ({ transaction }: SingleTransactionProps) => {
+  const navigation = useNavigation();
+
   return (
     <View>
-      <TouchableOpacity style={styles.mainContainerStyle}>
-        <View style={styles.detailsContainerStyle}>
-          <Text style={styles.textStyle}>
-            Account {item?.transaction_type}ed
-          </Text>
-          <Text style={styles.textStyle}>
-            {formatDate(item?.transaction_date)}
-          </Text>
-        </View>
-        <View style={styles.detailsContainerStyle}>
-          <Text style={styles.textStyle}>{item?.amount}</Text>
-          <Text style={styles.textStyle}>{item?.transaction_status}</Text>
-        </View>
-      </TouchableOpacity>
+      <Pressable style={styles.mainContainerStyle}>
+        <Link href={`/(tabs)/transactions/${transaction?.id}`}>
+          <View style={styles.detailsContainerStyle}>
+            <Text style={styles.textStyle}>
+              Account {transaction?.transaction_type}ed
+            </Text>
+            <Text style={styles.textStyle}>
+              {formatDate(new Date(transaction?.transaction_date))}
+            </Text>
+          </View>
+        </Link>
+        <Link href={`/(tabs)/transactions/${transaction?.id}`}>
+          <View style={styles.detailsContainerStyle}>
+            <Text style={styles.textStyle}>{transaction?.amount}</Text>
+            <Text style={styles.textStyle}>
+              {transaction?.transaction_status}
+            </Text>
+          </View>
+        </Link>
+      </Pressable>
     </View>
   );
 };
@@ -40,6 +54,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginVertical: 10,
     paddingHorizontal: 10,
+    marginHorizontal: 20,
     backgroundColor: '#FFF8E7',
   },
   detailsContainerStyle: {

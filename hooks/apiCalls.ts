@@ -1,12 +1,14 @@
 import axios from 'axios';
 import {
   accountsRoute,
+  callbackRoute,
   createAccountRoute,
   creditAccountRoute,
   emailVerificationRoute,
   forgotPasswordRoute,
   getBankDetailsRoute,
   getReceivingFundFlowAccountNameRoute,
+  getTransactionResponseRoute,
   getUserAccountNameRoute,
   getUserSingleAccountTransactionsRoute,
   ImageUploadRoute,
@@ -15,6 +17,8 @@ import {
   resendEmailVerificationRoute,
   resetPasswordRoute,
   singleAccountUsingAccountNumberRoute,
+  singleTransactionByTransactionId,
+  transactionsRoute,
   transferToFundFlowAccount,
   transferToOtherBank,
 } from './apiRoutes';
@@ -23,6 +27,7 @@ import {
   AuthState,
   dataObj,
   DataToSend,
+  TransactionDataType,
   TransactionResponse,
   TransferDataType,
 } from '@/constants/types';
@@ -362,7 +367,6 @@ const useApi = () => {
           headers: authHeader,
         }
       );
-      console.log('ApiCall credit:', response);
       return response;
     } catch (error) {
       console.error(error);
@@ -370,7 +374,68 @@ const useApi = () => {
     }
   };
 
+  const callbackResult = async (reference: string) => {
+    try {
+      console.log('API GET TRANSACTION CALL REFERENCE:', reference);
+      const result = await axios(`${callbackRoute}?reference=${reference}`, {
+        headers: authHeader,
+      });
+
+      console.log('API GET TRANSACTION CALL:', result.data);
+
+      return result.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
+  const getUserTransactions = async (
+    page: string,
+    limit: string,
+    searchValue: string
+  ): Promise<TransactionDataType> => {
+    try {
+      // console.log(page);
+      // console.log(limit);
+      // console.log(searchValue);
+      const transactions = await axios.get<TransactionDataType>(
+        `${transactionsRoute}?searchParams=${searchValue}&page=${page}&limit=${limit}`,
+        {
+          headers: authHeader,
+        }
+      );
+
+      // console.log('API response:', transactions.data);
+      return transactions.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
+  const getSingleTransactionByTransactionId = async (
+    transaction_id: string
+  ) => {
+    try {
+      const transaction = await axios(
+        `${singleTransactionByTransactionId}/${transaction_id}`,
+        {
+          headers: authHeader,
+        }
+      );
+      console.log(transaction.data);
+      return transaction.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
   return {
+    getSingleTransactionByTransactionId,
+    getUserTransactions,
+    callbackResult,
     creditUserAccount,
     getFundFlowReceivingAccountName,
     resendEmailVerificationToken,

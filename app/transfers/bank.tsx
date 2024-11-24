@@ -35,6 +35,7 @@ import CreditOptions from '@/components/CreditOptions';
 import { getSingleAccountTransactionsSuccess } from '../redux/transactionSlice';
 import { getSingleAccountSuccess } from '../redux/accountSlice';
 import HeaderRight from '@/components/Headers/HeaderRight';
+import Toast from 'react-native-toast-message';
 
 const BankTransfer = () => {
   const [loading, setLoading] = useState(false);
@@ -121,10 +122,16 @@ const BankTransfer = () => {
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         console.error(error.response.data.message);
-        Alert.alert(error.response.data.message);
+        Toast.show({
+          type: 'error',
+          text1: error.response.data.message,
+        });
       } else {
         console.error('An error occurred:', error);
-        Alert.alert('An error occured');
+        Toast.show({
+          type: 'error',
+          text1: 'An error occured',
+        });
       }
     } finally {
       setLoading(false);
@@ -142,7 +149,10 @@ const BankTransfer = () => {
         console.log(error);
         error.details.forEach((detail) => {
           console.log(detail.message);
-          Alert.alert(detail.message);
+          Toast.show({
+            type: 'error',
+            text1: detail.message,
+          });
         });
         return;
       }
@@ -153,7 +163,10 @@ const BankTransfer = () => {
 
       if (!receivingAccount) {
         console.error('Please select the receiving account');
-        Alert.alert('Please select the receiving account');
+        Toast.show({
+          type: 'error',
+          text1: 'Please select the receiving account',
+        });
       }
 
       console.log('BANK:', banks);
@@ -164,7 +177,10 @@ const BankTransfer = () => {
       console.log('actualBankObj:', actualBankObj);
 
       if (!actualBankObj) {
-        Alert.alert('Please select  a bank');
+        Toast.show({
+          type: 'error',
+          text1: 'Please select  a bank',
+        });
         return;
       }
 
@@ -195,10 +211,16 @@ const BankTransfer = () => {
       if (axios.isAxiosError(error) && error.response) {
         console.error(error.response.data.message);
         setLogError(error.response.data.message);
-        Alert.alert(error.response.data.message);
+        Toast.show({
+          type: 'error',
+          text1: error.response.data.message,
+        });
       } else {
         console.error('An error occurred:', error);
-        Alert.alert('An error occurred:');
+        Toast.show({
+          type: 'error',
+          text1: 'An error occurred:',
+        });
       }
     } finally {
       setIsLoading(false);
@@ -216,26 +238,38 @@ const BankTransfer = () => {
         console.log(error);
         error.details.forEach((detail) => {
           console.log(detail.message);
-          Alert.alert(detail.message);
+          Toast.show({
+            type: 'error',
+            text1: detail.message,
+          });
         });
         return;
       }
 
       if (!selectedAccountNumber) {
         console.error('Please select the account to be debited');
-        Alert.alert('Please select the account to be debited');
+        Toast.show({
+          type: 'error',
+          text1: 'Please select the account to be debited',
+        });
         return;
       }
 
       if (!selectedBank) {
         console.error('Please select the receiving bank');
-        Alert.alert('Please select the receiving bank');
+        Toast.show({
+          type: 'error',
+          text1: 'Please select the receiving bank',
+        });
         return;
       }
 
       if (!receivingAccount) {
         console.error('Please select the receiving account');
-        Alert.alert('Please select the receiving account');
+        Toast.show({
+          type: 'error',
+          text1: 'Please select the receiving account',
+        });
         return;
       }
 
@@ -248,11 +282,17 @@ const BankTransfer = () => {
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         console.error(error.response.data.message);
-        Alert.alert(error.response.data.message);
+        Toast.show({
+          type: 'error',
+          text1: error.response.data.message,
+        });
         setLogError(error.response.data.message);
       } else {
         console.error('An error occurred:', error);
-        Alert.alert('An error occurred:');
+        Toast.show({
+          type: 'error',
+          text1: 'An error occurred:',
+        });
       }
     } finally {
       setAmLoading(false);
@@ -288,10 +328,16 @@ const BankTransfer = () => {
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         console.error(error.response.data.message);
-        Alert.alert(error.response.data.message);
+        Toast.show({
+          type: 'error',
+          text1: error.response.data.message,
+        });
       } else {
         console.error('An error occurred:', error);
-        Alert.alert('An error occurred:');
+        Toast.show({
+          type: 'error',
+          text1: 'An error occurred:',
+        });
       }
     }
   };
@@ -315,10 +361,16 @@ const BankTransfer = () => {
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         console.error(error.response.data.message);
-        Alert.alert(error.response.data.message);
+        Toast.show({
+          type: 'error',
+          text1: error.response.data.message,
+        });
       } else {
         console.error('An error occurred:', error);
-        Alert.alert('An error occurred:');
+        Toast.show({
+          type: 'error',
+          text1: 'An error occurred:',
+        });
       }
     } finally {
       setLoading(false);

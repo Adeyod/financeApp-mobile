@@ -18,12 +18,26 @@ import { Colors } from '@/constants/Colors';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import axios from 'axios';
 import useApi from '@/hooks/apiCalls';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import Toast from 'react-native-toast-message';
+
+type RootStackParamList = {
+  'credit-account': undefined;
+  'paystack-web-view': { authorization_url: string };
+};
+
+type NavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'paystack-web-view'
+>;
 
 const CreditAccount = () => {
   const [loading, setLoading] = useState(false);
   const [amLoading, setAmLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [amount, setAmount] = useState('');
+  const navigation = useNavigation<NavigationProp>();
 
   const { creditUserAccount } = useApi();
 
@@ -61,29 +75,36 @@ const CreditAccount = () => {
       return null;
     }
     try {
-      setLoading(true);
+      setAmLoading(true);
       const result = await creditUserAccount(account_number, amount);
       console.log(result);
+      setAmount('');
+      setSelectedAccountNumber(null);
       if (result && result?.data?.data?.authorization_url) {
         console.log(result.data?.data?.authorization_url);
 
-        setAmount('');
-        setSelectedAccountNumber(null);
-
-        window.location.href = result.data?.data?.authorization_url;
+        navigation.navigate('paystack-web-view', {
+          authorization_url: result.data?.data?.authorization_url,
+        });
 
         return;
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         console.error(error.response.data.message);
-        Alert.alert(error.response.data.message);
+        Toast.show({
+          type: 'error',
+          text1: error.response.data.message
+        });
       } else {
         console.error('An error occurred:', error);
-        Alert.alert('An error occurred:');
+        Toast.show({
+          type: 'error',
+          text1: 'An error occurred:'
+        });
       }
     } finally {
-      setLoading(false);
+      setAmLoading(false);
     }
   };
 

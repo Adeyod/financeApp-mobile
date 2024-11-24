@@ -123,7 +123,8 @@ type SingleTransactionProp = {
 type TransactionState = {
   transactionDetails: TransactionType[];
   totalTransactionsCount: number;
-  singleAccountTransactionDetails: SingleTransactionProp;
+  singleAccountTransactionDetails: TransactionType[];
+  // singleAccountTransactionDetails: SingleTransactionProp;
   singleTransactionDetails: {
     id: string;
     user_id: string;
@@ -183,14 +184,38 @@ type TransactionType = {
   created_at: string;
   description: string;
   id: string;
+  receiver_account_name: string;
+  receiver_user_id: string;
   receiving_account: string;
+  receiving_account_number: string;
+  receiving_bank_name: string;
   reference_number: string;
+  sender_account_name: string;
+  sender_account_number: string;
+  sender_bank_name: string;
   transaction_date: string;
   transaction_source: string;
   transaction_status: string;
   transaction_type: string;
   updated_at: string;
   user_id: string;
+};
+
+type TransactionObject = {
+  transactions: TransactionType[];
+  totalTransactionsCount: number;
+};
+
+type SuccessMessage = {
+  message: string;
+  success: boolean;
+};
+
+type TransactionDataType = SuccessMessage & {
+  transactions: {
+    transactions: TransactionType[];
+    totalCount: number;
+  };
 };
 
 type TransactionResponse = {
@@ -253,6 +278,7 @@ type ReceiverProp = {
 };
 
 export {
+  TransactionObject,
   ReceiverProp,
   dataObj,
   RegisterFromProp,
@@ -278,4 +304,5 @@ export {
   CurrentUserType,
   SingleTransactionProp,
   ResetPasswordProp,
+  TransactionDataType,
 };

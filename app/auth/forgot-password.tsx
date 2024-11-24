@@ -14,6 +14,7 @@ import { router } from 'expo-router';
 import useApi from '@/hooks/apiCalls';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import LoadingIndicator from '@/components/LoadingIndicator';
+import Toast from 'react-native-toast-message';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -32,7 +33,10 @@ const ForgotPassword = () => {
 
     if (error) {
       error.details.forEach((detail) => {
-        Alert.alert(detail.message);
+        Toast.show({
+          type: 'error',
+          text1: detail.message,
+        });
       });
       return;
     }
@@ -42,17 +46,26 @@ const ForgotPassword = () => {
       const { data } = await forgotPasswordProcess(email);
       console.log(data);
       if (data.success) {
-        Alert.alert(data.message);
+        Toast.show({
+          type: 'success',
+          text1: data.message,
+        });
         router.replace('/auth/reset-password');
         return;
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
         console.error(error.response.data.message);
-        Alert.alert(error.response.data.message);
+        Toast.show({
+          type: 'error',
+          text1: error.response.data.message,
+        });
       } else {
         console.error('An error occurred:', error);
-        Alert.alert('An error occurred:');
+        Toast.show({
+          type: 'success',
+          text1: 'An error occurred',
+        });
       }
     } finally {
       setLoading(false);

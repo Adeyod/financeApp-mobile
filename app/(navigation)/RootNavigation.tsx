@@ -17,8 +17,6 @@ import ResetPassword from '../auth/reset-password';
 import TabsLayout from '../(tabs)/_layout';
 import TransferLayout from '../transfers/_layout';
 
-const RootStack = createStackNavigator();
-
 const RootNavigation = () => {
   return (
     <Stack>

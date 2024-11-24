@@ -14,6 +14,8 @@ import { formattedNumber } from '@/hooks/functions';
 import TransferCard from '@/components/Home/TransferCard';
 import AccountsSection from '@/components/Home/AccountsSection';
 import BillsAndPurchaseSection from '@/components/Home/BillsAndPurchaseSection';
+import { UseToast } from '@/hooks/toastHook';
+import Toast from 'react-native-toast-message';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -46,16 +48,26 @@ const HomeScreen = () => {
       const response = await getUserAccounts();
       if (response) {
         console.log('HOME SCREEN:', response.data);
+        Toast.show({
+          type: 'success',
+          text1: response.data.message,
+        });
         dispatch(getAccountsSuccess(response.data));
         return;
       }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        Alert.alert(error.response.data.message);
+        Toast.show({
+          type: 'error',
+          text1: error.response.data.message,
+        });
         console.error(error.response.data.message);
       } else {
         console.error('An error occurred:', error);
-        Alert.alert('An error occurred:');
+        Toast.show({
+          type: 'error',
+          text1: 'An error occurred',
+        });
       }
     } finally {
       setLoading(false);

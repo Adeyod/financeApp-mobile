@@ -5,11 +5,13 @@ import { Stack } from 'expo-router';
 const TransferLayout = () => {
   return (
     <Stack
-      screenOptions={{
-        // headerShown: false,
-        gestureEnabled: true, // Enable swipe gesture
-        animation: 'slide_from_right',
-      }}
+      screenOptions={
+        {
+          // headerShown: false,
+          // gestureEnabled: true, // Enable swipe gesture
+          // animation: 'slide_from_right',
+        }
+      }
     >
       <Stack.Screen
         name="fundflow"

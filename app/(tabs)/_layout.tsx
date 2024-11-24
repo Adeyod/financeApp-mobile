@@ -40,8 +40,9 @@ const TabsLayout = () => {
       <Tabs.Screen
         name="transactions"
         options={{
+          headerShown: false,
           tabBarLabel: 'Transactions',
-          tabBarIcon: (focused) => (
+          tabBarIcon: ({ focused }) => (
             <FontAwesome6
               name="naira-sign"
               size={24}
@@ -55,7 +56,7 @@ const TabsLayout = () => {
         options={{
           headerShown: false,
           tabBarLabel: 'Accounts',
-          tabBarIcon: (focused) => (
+          tabBarIcon: ({ focused }) => (
             <Entypo
               name="wallet"
               size={24}

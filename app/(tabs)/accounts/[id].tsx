@@ -35,7 +35,7 @@ const Account = () => {
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
   // const qu
-  // console.log('ACCOUNT ID:', id);
+  console.log('ACCOUNT ID:', id);
   const { getUserSingleAccountTransactions } = useApi();
 
   const {
@@ -45,8 +45,6 @@ const Account = () => {
   } = useSelector(
     (state: { transaction: TransactionState }) => state.transaction
   );
-
-  console.log('SINGLE:', singleAccountTransactionDetails);
 
   const { currentUser } = useSelector(
     (state: { user: UserState }) => state.user
@@ -77,7 +75,7 @@ const Account = () => {
         searchValue
       );
 
-      console.log('SINGLE ACCOUNT TRANSACTIONS:', response);
+      // console.log('SINGLE ACCOUNT TRANSACTIONS:', response);
 
       if (response) {
         dispatch(getSingleAccountTransactionsSuccess(response));
@@ -116,7 +114,7 @@ const Account = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: `${accountNumber[0]?.account_number}`,
+      headerTitle: 'Account details',
       headerTitleStyle: {
         color: 'white',
         fontStyle: 'italic',
@@ -126,23 +124,8 @@ const Account = () => {
       },
 
       headerLeft: () => (
-        <Pressable
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-          onPress={() => router.back()}
-        >
-          <MaterialIcons name="arrow-back-ios-new" size={24} color="white" />
-          <Text
-            style={{
-              color: 'white',
-              marginLeft: -4,
-            }}
-          >
-            Back
-          </Text>
+        <Pressable onPress={() => router.back()}>
+          <MaterialIcons name="keyboard-backspace" size={24} color="white" />
         </Pressable>
       ),
       headerRight: () => {
@@ -183,7 +166,9 @@ const Account = () => {
             </ScrollView>
 
             <View>
-              <Text>Account Details</Text>
+              <Text style={styles.accountTextStyle}>
+                Single Account Transactions
+              </Text>
               <SingleAccountTransactions
                 singleAccountTransactionDetails={
                   singleAccountTransactionDetails
@@ -210,5 +195,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.colors.secondary,
     borderRadius: 20,
     paddingLeft: 10,
+  },
+  accountTextStyle: {
+    marginVertical: 15,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+    fontStyle: 'italic',
   },
 });

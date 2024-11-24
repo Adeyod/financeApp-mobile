@@ -18,6 +18,7 @@ import { RegisterFromProp } from '@/constants/types';
 import PhoneInput from 'react-native-phone-number-input';
 import { joiRegisterValidationSchema } from '@/hooks/validation';
 import { Link, router } from 'expo-router';
+import Toast from 'react-native-toast-message';
 
 const Register = () => {
   const [value, setValue] = useState('');
@@ -56,13 +57,19 @@ const Register = () => {
 
     if (error) {
       error.details.forEach((detail) => {
-        Alert.alert(detail.message);
+        Toast.show({
+          type: 'error',
+          text1: detail.message,
+        });
       });
       return;
     }
 
     if (phoneNumber.includes(' ')) {
-      Alert.alert('Please remove whitespace characters in phone number');
+      Toast.show({
+        type: 'error',
+        text1: 'Please remove whitespace characters in phone number',
+      });
       return;
     }
     setLoading(true);
@@ -72,15 +79,20 @@ const Register = () => {
       console.log('data:', data);
       if (data) {
         console.log('i am logging here');
-
-        Alert.alert(data.message);
+        Toast.show({
+          type: 'success',
+          text1: data.message,
+        });
         router.replace('/auth/email-verification');
         return;
       } else {
         console.log('An error occurred');
       }
     } catch (error: any) {
-      Alert.alert(error.response.data.message);
+      Toast.show({
+        type: 'error',
+        text1: error.response.data.message,
+      });
     } finally {
       setLoading(false);
     }

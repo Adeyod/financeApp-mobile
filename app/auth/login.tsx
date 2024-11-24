@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../redux/userSlice';
 import { loginAuthSuccess } from '../redux/authSlice';
 import axios from 'axios';
+import Toast from 'react-native-toast-message';
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -33,11 +34,10 @@ const Login = () => {
       if (data) {
         const { token, user, access } = data;
         const accessData = { token, access };
-        console.log('user:', user);
-        console.log('access:', access);
-        console.log('token:', token);
-
-        Alert.alert(data.message);
+        Toast.show({
+          type: 'success',
+          text1: data.message,
+        });
         dispatch(loginSuccess(user));
         dispatch(loginAuthSuccess(accessData));
 
@@ -48,10 +48,16 @@ const Login = () => {
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response) {
-        Alert.alert(error.response.data.message);
+        Toast.show({
+          type: 'error',
+          text1: error.response.data.message,
+        });
       } else {
         console.error('An error occurred');
-        Alert.alert('An error occurred');
+        Toast.show({
+          type: 'success',
+          text1: 'An error occurred',
+        });
       }
     } finally {
       setLoading(false);

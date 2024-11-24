@@ -8,6 +8,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
+import Toast from 'react-native-toast-message';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import RootNavigation from './(navigation)/RootNavigation';
@@ -46,6 +47,7 @@ export default function RootLayout() {
         <PersistGate persistor={persistor}>
           <ThemeProvider value={theme}>
             <RootNavigation />
+            <Toast />
           </ThemeProvider>
         </PersistGate>
       </Provider>

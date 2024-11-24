@@ -8,17 +8,14 @@ const SingleAccountTransactions = ({
 }: SingleTransactionProp) => {
   return (
     <View>
-      <Text>SingleAccountTransactions</Text>
-      <View>
-        {singleAccountTransactionDetails?.map((trx, index) => (
-          <FlatList
-            data={singleAccountTransactionDetails}
-            renderItem={({ item, index }) => (
-              <SingleTransaction item={item} key={index} />
-            )}
-          />
-        ))}
-      </View>
+      {singleAccountTransactionDetails?.map((trx, index) => (
+        <FlatList
+          data={singleAccountTransactionDetails}
+          renderItem={({ item, index }) => (
+            <SingleTransaction transaction={item} key={index} />
+          )}
+        />
+      ))}
     </View>
   );
 };

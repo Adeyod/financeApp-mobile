@@ -20,28 +20,24 @@ const transactionSlice = createSlice({
     getSingleAccountTransactionsSuccess(state, action) {
       const { transactions, completed_transactions, totalCount } =
         action.payload;
-      // console.log('transactions:', transactions);
-      // console.log('completed_transactions:', completed_transactions);
-      // console.log('totalCount:', totalCount);
+
       state.singleAccountTransactionDetails = transactions;
       state.singleAccountCompletedTransactionsCount = completed_transactions;
       state.singleAccountTotalTransactionsCount = totalCount;
 
-      // console.log('TRANSACTION SLICE:', state.singleAccountTransactionDetails);
-      // console.log(
-      //   'TRANSACTION SLICE:',
-      //   state.singleAccountCompletedTransactionsCount
-      // );
-      // console.log(
-      //   'TRANSACTION SLICE:',
-      //   state.singleAccountTotalTransactionsCount
-      // );
+      console.log('SLICE transactions:', state.singleAccountTransactionDetails);
+      console.log(
+        'SLICE completed_transactions:',
+        state.singleAccountCompletedTransactionsCount
+      );
+      console.log(
+        'SLICE totalCount:',
+        state.singleAccountTotalTransactionsCount
+      );
     },
 
     getTransactionsSuccess(state, action) {
       const transactionDetails = action.payload;
-      console.log(transactionDetails.totalCount);
-
       state.transactionDetails = transactionDetails.transactions;
       state.totalTransactionsCount = transactionDetails.totalCount;
     },

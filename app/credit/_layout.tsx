@@ -6,7 +6,21 @@ const CreditLayout = () => {
   return (
     <Stack>
       <Stack.Screen
-        name="creditaccount"
+        name="credit-account"
+        options={{
+          // headerShown: false,
+          headerTitle: 'Deposit money into account',
+        }}
+      />
+      <Stack.Screen
+        name="paystack-web-view"
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <Stack.Screen
+        name="verification-screen"
         options={{
           headerShown: false,
         }}

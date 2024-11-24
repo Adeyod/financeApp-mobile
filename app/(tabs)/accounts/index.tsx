@@ -17,6 +17,7 @@ import { Colors } from '@/constants/Colors';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import axios from 'axios';
 import LoadingIndicator from '@/components/LoadingIndicator';
+import Toast from 'react-native-toast-message';
 
 const accounts = () => {
   const dispatch = useDispatch();
@@ -39,7 +40,10 @@ const accounts = () => {
       setLoading(true);
       const { data } = await getUserAccounts();
       if (data) {
-        Alert.alert(data.message);
+        Toast.show({
+          type: 'success',
+          text1: data.message,
+        });
         dispatch(getAccountsSuccess(data));
         return;
       }
@@ -56,7 +60,10 @@ const accounts = () => {
       const response = await createNewAccountNumber();
 
       if (response) {
-        Alert.alert(response?.data?.message);
+        Toast.show({
+          type: 'success',
+          text1: response.data.message,
+        });
         const userAccounts = await getUserAccounts();
         dispatch(getAccountsSuccess(userAccounts?.data));
         return;
@@ -64,10 +71,16 @@ const accounts = () => {
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         console.error(error.response.data.message);
-        Alert.alert(error.response.data.message);
+        Toast.show({
+          type: 'error',
+          text1: error.response.data.message,
+        });
       } else {
         console.error('An error occurred:', error);
-        Alert.alert('An error occurred');
+        Toast.show({
+          type: 'error',
+          text1: 'An error occurred:',
+        });
       }
     } finally {
       setIsLoading(false);

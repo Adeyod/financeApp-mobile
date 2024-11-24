@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    // gap: 5,
   },
   imageStyle: {
     width: 45,

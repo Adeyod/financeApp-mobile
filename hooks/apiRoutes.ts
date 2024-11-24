@@ -1,5 +1,5 @@
-const port = 'http://192.168.43.47:3020/api';
-// const port = 'http://192.168.0.105:3020/api';
+// const port = 'http://192.168.43.47:3020/api';
+const port = 'http://192.168.0.105:3020/api';
 // const port = 'http://localhost:3020/api';
 // http://192.168.43.47:
 //192.168.0.105:8081
@@ -22,12 +22,20 @@ const getUserAccountNameRoute = `${port}/accounts/confirm-receiver-account`;
 const transferToOtherBank = `${port}/transactions/send-to-other-bank`;
 const singleAccountUsingAccountNumberRoute = `${port}/accounts/get-user-account`;
 const transferToFundFlowAccount = `${port}/transactions/send-to-fund-flow`;
+const transactionsRoute = `${port}/transactions/user-transactions`;
+
 const getReceivingFundFlowAccountNameRoute = `${port}/accounts/get-receiving-user-details`;
 
 const ResentEmailVerificationRoute = `${port}/auth/resend-email-verification`;
 const creditAccountRoute = `${port}/transactions/initialize`;
+const getTransactionResponseRoute = `${port}/transactions/status-paystack`;
+const callbackRoute = `${port}/transactions/call-back`;
+const singleTransactionByTransactionId = `${port}/transactions/single-transaction`;
 
 export {
+  singleTransactionByTransactionId,
+  callbackRoute,
+  getTransactionResponseRoute,
   creditAccountRoute,
   getReceivingFundFlowAccountNameRoute,
   ResentEmailVerificationRoute,
@@ -46,4 +54,5 @@ export {
   registerRoute,
   resendEmailVerificationRoute,
   getUserSingleAccountTransactionsRoute,
+  transactionsRoute,
 };
