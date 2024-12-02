@@ -14,8 +14,8 @@ import { formattedNumber } from '@/hooks/functions';
 import TransferCard from '@/components/Home/TransferCard';
 import AccountsSection from '@/components/Home/AccountsSection';
 import BillsAndPurchaseSection from '@/components/Home/BillsAndPurchaseSection';
-import { UseToast } from '@/hooks/toastHook';
 import Toast from 'react-native-toast-message';
+import CoyLogo from '../../assets/imgs/color-logo.png';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -95,9 +95,22 @@ const HomeScreen = () => {
         <View
           style={{
             paddingLeft: 15,
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
           }}
         >
-          <Text>I am here</Text>
+          <Image source={CoyLogo} />
+          <Text
+            style={{
+              fontSize: 20,
+              color: 'white',
+              marginLeft: -60,
+              fontStyle: 'italic',
+            }}
+          >
+            FundFlow
+          </Text>
         </View>
       ),
       headerRight: () => (
@@ -105,6 +118,7 @@ const HomeScreen = () => {
       ),
     });
   });
+
   return (
     <View
       style={{

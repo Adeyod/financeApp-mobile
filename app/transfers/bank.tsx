@@ -36,6 +36,7 @@ import { getSingleAccountTransactionsSuccess } from '../redux/transactionSlice';
 import { getSingleAccountSuccess } from '../redux/accountSlice';
 import HeaderRight from '@/components/Headers/HeaderRight';
 import Toast from 'react-native-toast-message';
+import { getNotificationsSuccess } from '../redux/notificationSlice';
 
 const BankTransfer = () => {
   const [loading, setLoading] = useState(false);
@@ -61,6 +62,10 @@ const BankTransfer = () => {
     bank_code: '',
   });
 
+  const [searchValue] = useState('');
+  const [page] = useState(1);
+  const limit = '10';
+
   const dataToSend = {
     narration: narration,
     bankCode: bankCode,
@@ -84,6 +89,7 @@ const BankTransfer = () => {
     getAccountName,
     makeTransferToOtherBank,
     getUserSingleAccountTransactionsWithoutQuery,
+    getNotifications,
   } = useApi();
 
   const { accountDetails } = useSelector(
@@ -277,6 +283,14 @@ const BankTransfer = () => {
 
       if (response) {
         router.push('/');
+
+        const response = await getNotifications(
+          page.toString(),
+          limit,
+          searchValue
+        );
+
+        dispatch(getNotificationsSuccess(response?.notifications));
         return;
       }
     } catch (error: unknown) {

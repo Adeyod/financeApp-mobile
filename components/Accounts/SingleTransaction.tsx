@@ -7,14 +7,10 @@ import {
 } from 'react-native';
 import React from 'react';
 import { formatDate } from '@/hooks/functions';
-import { TransactionType } from '@/constants/types';
+import { SingleTransactionProps } from '@/constants/types';
 import { Colors } from '@/constants/Colors';
 import { Link, router } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
-
-type SingleTransactionProps = {
-  transaction: TransactionType;
-};
 
 const SingleTransaction = ({ transaction }: SingleTransactionProps) => {
   const navigation = useNavigation();

@@ -1,14 +1,28 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import React, { useMemo, useState } from 'react';
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { UserState } from '@/constants/types';
+import { NotificationState, UserState } from '@/constants/types';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Popover from 'react-native-popover-view';
-import { router, useNavigation } from 'expo-router';
+import { Link, router, useNavigation } from 'expo-router';
 import { logoutAuthSuccess } from '@/app/redux/authSlice';
 import { logoutSuccess } from '@/app/redux/userSlice';
 import { clearAccounts } from '@/app/redux/accountSlice';
 import { clearTransactions } from '@/app/redux/transactionSlice';
+import {
+  clearNotifications,
+  getNotificationsSuccess,
+} from '@/app/redux/notificationSlice';
+import useApi from '@/hooks/apiCalls';
+import axios from 'axios';
+import Toast from 'react-native-toast-message';
 
 type ImageProps = {
   profileImageUrl: string | undefined;
@@ -16,6 +30,25 @@ type ImageProps = {
 
 const HeaderRight: React.FC<ImageProps> = ({ profileImageUrl }: ImageProps) => {
   const [isPopoverVisible, setPopoverVisible] = useState(false);
+
+  const notificationIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const { getNotifications } = useApi();
+
+  const { totalIsViewed } = useSelector(
+    (state: { notification: NotificationState }) => state.notification
+  );
+
+  const { currentUser } = useSelector(
+    (state: { user: UserState }) => state.user
+  );
+
+  console.log('currentUser:', currentUser);
+  console.log('totalIsViewed:', totalIsViewed);
+
+  const [searchValue] = useState('');
+  const [page] = useState(1);
+  const limit = '10';
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -31,15 +64,71 @@ const HeaderRight: React.FC<ImageProps> = ({ profileImageUrl }: ImageProps) => {
     dispatch(logoutSuccess());
     dispatch(clearAccounts());
     dispatch(clearTransactions());
+    dispatch(clearNotifications());
     router.replace('/auth/login');
   };
+
+  const getAllNotifications = async (searchValue: string) => {
+    try {
+      const response = await getNotifications(
+        page.toString(),
+        limit,
+        searchValue
+      );
+
+      dispatch(getNotificationsSuccess(response?.notifications));
+      return;
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response) {
+        Toast.show({
+          type: 'error',
+          text1: error.response.data.message,
+        });
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'An error occurred',
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (currentUser) {
+      getAllNotifications(searchValue);
+
+      notificationIntervalRef.current = setInterval(() => {
+        getAllNotifications(searchValue);
+      }, 60000);
+
+      return () => {
+        if (notificationIntervalRef.current) {
+          clearInterval(notificationIntervalRef.current);
+        }
+      };
+    }
+  }, [currentUser, searchValue]);
 
   const headerRightComponent = useMemo(
     () => (
       <View style={styles.containerStyle}>
-        <Pressable>
+        <TouchableOpacity onPress={() => router.push('/notifications')}>
           <Ionicons name="notifications-sharp" size={35} color="black" />
-        </Pressable>
+
+          <Text
+            style={{
+              position: 'absolute',
+              backgroundColor: 'red',
+              top: -10,
+              left: -3,
+              padding: 8,
+              borderRadius: 99,
+              color: 'white',
+            }}
+          >
+            {totalIsViewed > 0 && totalIsViewed}
+          </Text>
+        </TouchableOpacity>
 
         <Popover
           isVisible={isPopoverVisible}
@@ -71,7 +160,7 @@ const HeaderRight: React.FC<ImageProps> = ({ profileImageUrl }: ImageProps) => {
         </Popover>
       </View>
     ),
-    [profileImageUrl, isPopoverVisible]
+    [profileImageUrl, isPopoverVisible, totalIsViewed]
   );
 
   return headerRightComponent;
@@ -84,6 +173,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    position: 'relative',
     // gap: 5,
   },
   imageStyle: {

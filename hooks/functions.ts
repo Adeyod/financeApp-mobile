@@ -21,4 +21,12 @@ const formatDate = (date = new Date()) => {
   return dateFormatted;
 };
 
-export { formattedNumber, formatDate };
+const truncateText = (text: string, num: number) => {
+  if (text.length > num) {
+    return text.substring(0, num - 3) + '...';
+  }
+
+  return text;
+};
+
+export { formattedNumber, formatDate, truncateText };

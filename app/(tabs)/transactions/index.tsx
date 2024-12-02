@@ -2,6 +2,7 @@ import {
   FlatList,
   NativeSyntheticEvent,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInputKeyPressEventData,
@@ -30,11 +31,13 @@ import HeaderRight from '@/components/Headers/HeaderRight';
 import TransactionOptions from '@/components/TransactionHeaderCard';
 import { MaterialIcons } from '@expo/vector-icons';
 import SingleTransaction from '@/components/Accounts/SingleTransaction';
+import LoadingIndicator from '@/components/LoadingIndicator';
 
 const Transactions = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [localTransactionDetails, setLocalTransactionDetails] = useState<
     TransactionType[]
   >([]);
@@ -50,23 +53,18 @@ const Transactions = () => {
 
   console.log(totalTransactionsCount);
 
-  // Parse query parameters from URL
-  // const queryParams = new URLSearchParams(location.search);
-  // const pageParam = queryParams.get('page');
-  // const limitParam = queryParams.get('limit');
-  // const searchParam = queryParams.get('search');
-
-  // const [searchValue, setSearchValue] = useState(searchParam || '');
-  // const [page, setPage] = useState(Number(pageParam) || 1);
-  // const limit = limitParam || '10';
-  // const totalPages = Math.ceil(totalTransactionsCount / Number(limit));
-  const [page, setPage] = useState('1');
+  const [page, setPage] = useState(1);
   const [limit, setLimit] = useState('10');
   const [searchValue, setSearchValue] = useState('');
 
-  const getAllTransactions = async (searchValue: string) => {
+  const totalPages = Math.ceil(totalTransactionsCount / Number(limit));
+
+  const getAllTransactions = async (
+    searchValue: string,
+    isSearchRequest = false
+  ) => {
     try {
-      setLoading(true);
+      isSearchRequest ? setIsSearching(true) : setLoading(true);
       const response = await getUserTransactions(
         page.toString(),
         limit,
@@ -74,7 +72,6 @@ const Transactions = () => {
       );
 
       if (response) {
-        // console.log('transaction screen:', response.transactions);
         dispatch(getTransactionsSuccess(response?.transactions));
         setLocalTransactionDetails(response?.transactions?.transactions || []);
       }
@@ -91,21 +88,23 @@ const Transactions = () => {
         });
       }
     } finally {
-      setLoading(false);
+      isSearchRequest ? setIsSearching(false) : setLoading(false);
     }
   };
 
   const debouncedSearchValue = useDebounce(searchValue, 1000);
 
   useEffect(() => {
-    if (debouncedSearchValue || page) {
-      getAllTransactions(debouncedSearchValue);
+    if (debouncedSearchValue) {
+      getAllTransactions(debouncedSearchValue, true);
     }
-  }, [debouncedSearchValue, page]);
+  }, [debouncedSearchValue]);
 
   useEffect(() => {
-    getAllTransactions(searchValue);
-  }, [page, limit, searchValue]);
+    if (!debouncedSearchValue) {
+      getAllTransactions(searchValue);
+    }
+  }, [page, limit]);
 
   const handleKeyPress = (
     e: NativeSyntheticEvent<TextInputKeyPressEventData>
@@ -133,64 +132,80 @@ const Transactions = () => {
   }, [navigation, currentUser]);
 
   return (
-    <RefreshWrapper>
+    <ScrollView>
       {loading ? (
         <LoadingSpinner loading={loading} />
       ) : (
-        <View
-          style={{
-            marginTop: 40,
-          }}
-        >
-          <Text style={styles.upperTextStyle}>
-            Hello,
-            <Text style={styles.usernameTextStyle}>
-              {' '}
-              {currentUser?.first_name}{' '}
+        <View>
+          <View
+            style={{
+              marginTop: 40,
+            }}
+          >
+            <Text style={styles.upperTextStyle}>
+              Hello,
+              <Text style={styles.usernameTextStyle}>
+                {' '}
+                {currentUser?.first_name}{' '}
+              </Text>
+              you are welcome back
             </Text>
-            you are welcome back
-          </Text>
 
-          <TransactionOptions
-            transactions={localTransactionDetails}
-            totalTransactionsCount={totalTransactionsCount}
-          />
-
-          <View style={styles.searchContainerStyle}>
-            <Search
-              searchValue={searchValue}
-              setSearchValue={setSearchValue}
-              handleKeyPress={handleKeyPress}
+            <TransactionOptions
+              transactions={localTransactionDetails}
+              totalTransactionsCount={totalTransactionsCount}
             />
+
+            <View style={styles.searchContainerStyle}>
+              <Search
+                searchValue={searchValue}
+                setSearchValue={setSearchValue}
+                handleKeyPress={handleKeyPress}
+              />
+            </View>
           </View>
-
-          {/* <View style={styles.header}>
-            <Text style={[styles.th, { marginLeft: -20 }]}>Account number</Text>
-            <Text style={[styles.th, { marginLeft: -30 }]}>Amount</Text>
-            <Text style={styles.th}>Details</Text>
-          </View> */}
-
-          <FlatList
-            data={localTransactionDetails}
-            renderItem={({ item, index }) => (
-              <SingleTransaction transaction={item} key={index} />
-            )}
-          />
         </View>
       )}
-      <View style={styles.pageButtonsContainerStyle}>
-        <View style={styles.singleButtonContainerStyle}>
-          <Pressable>
-            <Text style={styles.textStyle}>Previous</Text>
-          </Pressable>
+
+      {isSearching ? (
+        <LoadingIndicator />
+      ) : (
+        <FlatList
+          data={localTransactionDetails}
+          renderItem={({ item, index }) => (
+            <SingleTransaction transaction={item} key={index} />
+          )}
+        />
+      )}
+
+      {!isSearching && (
+        <View style={styles.isSearchContainerStyle}>
+          <View style={styles.pageButtonsContainerStyle}>
+            {page > 1 && (
+              <View style={styles.singleButtonContainerStyle}>
+                <Pressable onPress={() => setPage(page - 1)}>
+                  <Text style={styles.textStyle}>Previous</Text>
+                </Pressable>
+              </View>
+            )}
+
+            {page < totalPages && (
+              <View style={styles.singleButtonContainerStyle}>
+                <Pressable onPress={() => setPage(page + 1)}>
+                  <Text style={styles.textStyle}>Next</Text>
+                </Pressable>
+              </View>
+            )}
+          </View>
+
+          <View>
+            <Text>
+              Page {page} of {totalPages}{' '}
+            </Text>
+          </View>
         </View>
-        <View style={styles.singleButtonContainerStyle}>
-          <Pressable>
-            <Text style={styles.textStyle}>Next</Text>
-          </Pressable>
-        </View>
-      </View>
-    </RefreshWrapper>
+      )}
+    </ScrollView>
   );
 };
 
@@ -245,5 +260,11 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     color: 'white',
+  },
+  isSearchContainerStyle: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    paddingRight: 20,
   },
 });

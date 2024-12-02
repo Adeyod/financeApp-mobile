@@ -1,6 +1,7 @@
 // const port = 'http://192.168.43.47:3020/api';
-const port = 'http://192.168.0.105:3020/api';
-// const port = 'http://localhost:3020/api';
+const port = 'https://financeapp-backend-atuh.onrender.com/api';
+// const port = 'http://192.168.0.105:3020/api';
+// const port = 'http://localport:3020/api';
 // http://192.168.43.47:
 //192.168.0.105:8081
 
@@ -32,7 +33,20 @@ const getTransactionResponseRoute = `${port}/transactions/status-paystack`;
 const callbackRoute = `${port}/transactions/call-back`;
 const singleTransactionByTransactionId = `${port}/transactions/single-transaction`;
 
+const allNotificationsRoute = `${port}/notifications/user-notifications`;
+const markNotificationAsViewedRoute = `${port}/notifications/user-notifications/view`;
+const markNotificationAsReadRoute = `${port}/notifications/user-notifications/read/`;
+const singleNotificationRoute = `${port}/notifications/user-notifications`;
+const deleteNotificationRoute = `${port}/notifications/user-notifications`;
+const deleteManyNotificationRoute = `${port}/notifications/user-notifications/delete-many`;
+
 export {
+  markNotificationAsViewedRoute,
+  markNotificationAsReadRoute,
+  singleNotificationRoute,
+  deleteNotificationRoute,
+  deleteManyNotificationRoute,
+  allNotificationsRoute,
   singleTransactionByTransactionId,
   callbackRoute,
   getTransactionResponseRoute,

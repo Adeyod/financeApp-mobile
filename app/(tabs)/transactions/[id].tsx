@@ -89,7 +89,10 @@ const transaction = () => {
             alignItems: 'center',
             marginRight: 20,
           }}
-          onPress={() => router.back()}
+          onPress={() => {
+            console.log('i want to go back');
+            router.back();
+          }}
         >
           <MaterialIcons name="keyboard-backspace" size={24} color="white" />
         </Pressable>
@@ -167,48 +170,46 @@ const transaction = () => {
               <Text style={styles.textCommonStyle}>user credit account</Text>
             </View>
 
-            {singleTransactionDetails?.receiving_account_number ||
+            {(singleTransactionDetails?.receiving_account_number ||
               singleTransactionDetails?.receiving_account ||
               singleTransactionDetails?.receiving_bank_name ||
-              (singleTransactionDetails?.receiver_account_name && (
-                <View>
-                  <Text>
-                    {singleTransactionDetails?.transaction_type === 'debit' ? (
-                      <Text> receiver</Text>
-                    ) : (
-                      <Text>sender</Text>
-                    )}{' '}
-                    details
-                  </Text>
+              singleTransactionDetails?.receiver_account_name) && (
+              <View>
+                <Text>
+                  {singleTransactionDetails?.transaction_type === 'debit'
+                    ? 'receiver'
+                    : 'sender'}{' '}
+                  details
+                </Text>
 
-                  {singleTransactionDetails?.receiving_account_number ? (
+                {singleTransactionDetails?.receiving_account_number && (
+                  <Text>
+                    <Text>account number: </Text>
                     <Text>
-                      <Text>account number: </Text>
-                      <Text>
-                        {singleTransactionDetails?.receiving_account_number}
-                      </Text>
+                      {singleTransactionDetails?.receiving_account_number}
                     </Text>
-                  ) : singleTransactionDetails?.receiving_account ? (
-                    singleTransactionDetails?.receiving_account?.slice(0, 3) +
-                    'xxx' +
-                    singleTransactionDetails?.receiving_account?.slice(29, 32)
-                  ) : (
-                    ''
-                  )}
-                  {singleTransactionDetails?.receiving_bank_name && (
-                    <Text>
-                      <Text>bank: </Text>
-                      {singleTransactionDetails?.receiving_bank_name}
-                    </Text>
-                  )}
-                  {singleTransactionDetails?.receiver_account_name && (
-                    <Text>
-                      <Text>name: </Text>
-                      {singleTransactionDetails?.receiver_account_name}
-                    </Text>
-                  )}
-                </View>
-              ))}
+                  </Text>
+                )}
+                {singleTransactionDetails?.receiving_account && (
+                  <Text>
+                    account:{' '}
+                    {singleTransactionDetails?.receiving_account.slice(0, 3) +
+                      'xxx' +
+                      singleTransactionDetails?.receiving_account.slice(29, 32)}
+                  </Text>
+                )}
+                {singleTransactionDetails?.receiving_bank_name && (
+                  <Text>
+                    bank: {singleTransactionDetails?.receiving_bank_name}
+                  </Text>
+                )}
+                {singleTransactionDetails?.receiver_account_name && (
+                  <Text>
+                    name: {singleTransactionDetails?.receiver_account_name}
+                  </Text>
+                )}
+              </View>
+            )}
           </View>
         </RefreshWrapper>
       )}

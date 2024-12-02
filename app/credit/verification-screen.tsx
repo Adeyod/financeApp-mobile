@@ -7,14 +7,25 @@ import useApi from '@/hooks/apiCalls';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { Link, router } from 'expo-router';
 import Toast from 'react-native-toast-message';
+import { getNotificationsSuccess } from '../redux/notificationSlice';
+import { useDispatch } from 'react-redux';
 
 const VerificationScreen = () => {
   const route = useRoute();
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
   const [failure, setFailure] = useState(false);
   const { reference } = route.params as { reference: string };
-  const { callbackResult } = useApi();
+  const {
+    callbackResult,
+
+    getNotifications,
+  } = useApi();
+
+  const [searchValue] = useState('');
+  const [page] = useState(1);
+  const limit = '10';
 
   console.log('REFERENCE:', reference);
 
@@ -32,6 +43,15 @@ const VerificationScreen = () => {
           text1: data.message,
         });
         setSuccess(true);
+
+        const response = await getNotifications(
+          page.toString(),
+          limit,
+          searchValue
+        );
+
+        dispatch(getNotificationsSuccess(response?.notifications));
+
         router.replace('/');
         return;
       }

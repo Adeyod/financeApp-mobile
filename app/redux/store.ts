@@ -4,6 +4,7 @@ import userReducer from './userSlice';
 import transactionReducer from './transactionSlice';
 import accountReducer from './accountSlice';
 import authReducer from './authSlice';
+import notificationReducer from './notificationSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { persistReducer, persistStore } from 'redux-persist';
 import SecureStoreStorage from '@/hooks/secureStore';
@@ -17,7 +18,7 @@ const securePersistConfig = {
 const generalPersistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['user', 'transaction', 'account'],
+  whitelist: ['user', 'transaction', 'account', 'notification'],
 };
 
 const rootReducer = combineReducers({
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
   user: userReducer,
   transaction: transactionReducer,
   account: accountReducer,
+  notification: notificationReducer,
 });
 
 const persistedReducer = persistReducer(generalPersistConfig, rootReducer);

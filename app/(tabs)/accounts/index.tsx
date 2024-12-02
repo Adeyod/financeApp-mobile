@@ -4,6 +4,7 @@ import {
   Alert,
   FlatList,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -96,7 +97,7 @@ const accounts = () => {
   }, [accountDetails]);
 
   return (
-    <RefreshWrapper>
+    <ScrollView>
       {loading ? (
         <LoadingSpinner loading={loading} />
       ) : (
@@ -161,7 +162,7 @@ const accounts = () => {
           />
         </View>
       )}
-    </RefreshWrapper>
+    </ScrollView>
   );
 };
 

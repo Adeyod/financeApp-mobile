@@ -24,16 +24,6 @@ const transactionSlice = createSlice({
       state.singleAccountTransactionDetails = transactions;
       state.singleAccountCompletedTransactionsCount = completed_transactions;
       state.singleAccountTotalTransactionsCount = totalCount;
-
-      console.log('SLICE transactions:', state.singleAccountTransactionDetails);
-      console.log(
-        'SLICE completed_transactions:',
-        state.singleAccountCompletedTransactionsCount
-      );
-      console.log(
-        'SLICE totalCount:',
-        state.singleAccountTotalTransactionsCount
-      );
     },
 
     getTransactionsSuccess(state, action) {

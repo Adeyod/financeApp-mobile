@@ -1,6 +1,12 @@
 import axios from 'axios';
 import {
+  markNotificationAsViewedRoute,
+  markNotificationAsReadRoute,
+  singleNotificationRoute,
+  deleteNotificationRoute,
+  deleteManyNotificationRoute,
   accountsRoute,
+  allNotificationsRoute,
   callbackRoute,
   createAccountRoute,
   creditAccountRoute,
@@ -126,6 +132,7 @@ const useApi = () => {
         }
       );
 
+      console.log('API RESPONSE:', response.data.transactions.length);
       return response.data;
     } catch (error) {
       console.error(error);
@@ -432,7 +439,118 @@ const useApi = () => {
     }
   };
 
+  const getNotifications = async (
+    page: string,
+    limit: string,
+    searchValue: string
+  ) => {
+    try {
+      const response = await axios(
+        `${allNotificationsRoute}?searchParams=${searchValue}&page=${page}&limit=${limit}`,
+        {
+          headers: authHeader,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
+  const markNotificationsAsViewed = async () => {
+    try {
+      const response = await axios.put(
+        markNotificationAsViewedRoute,
+        {},
+        {
+          headers: authHeader,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
+  const markANotificationAsRead = async (notification_id: string) => {
+    console.log(notification_id);
+    try {
+      const response = await axios.put(
+        `${markNotificationAsReadRoute}${notification_id}`,
+        {},
+        {
+          headers: authHeader,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
+  const getSingleNotification = async (notification_id: string) => {
+    try {
+      const response = await axios(
+        `${singleNotificationRoute}/${notification_id}`,
+        {
+          headers: authHeader,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
+  const deleteNotification = async (notification_id: number) => {
+    try {
+      const id = notification_id.toString();
+      const response = await axios.delete(`${deleteNotificationRoute}/${id}`, {
+        headers: authHeader,
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
+  const deleteManyNotifications = async (notification_ids: number[]) => {
+    try {
+      console.log('deleteManyNotifications:', notification_ids);
+      const response = await axios.post(
+        deleteManyNotificationRoute,
+        {
+          notification_ids,
+        },
+        {
+          headers: authHeader,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  };
+
   return {
+    markANotificationAsRead,
+    getSingleNotification,
+    deleteNotification,
+    deleteManyNotifications,
+    markNotificationsAsViewed,
+    getNotifications,
     getSingleTransactionByTransactionId,
     getUserTransactions,
     callbackResult,

@@ -23,6 +23,7 @@ import BlinkingText from '@/components/BlinkingText';
 import LoadingIndicator from '@/components/LoadingIndicator';
 import HeaderRight from '@/components/Headers/HeaderRight';
 import Toast from 'react-native-toast-message';
+import { getNotificationsSuccess } from '../redux/notificationSlice';
 
 const Profile = () => {
   const navigation = useNavigation();
@@ -33,7 +34,11 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [imgUrl, setImgUrl] = useState<string>();
 
-  const { getUserAccounts, imageProfileUpload } = useApi();
+  const { getUserAccounts, imageProfileUpload, getNotifications } = useApi();
+
+  const [searchValue] = useState('');
+  const [page] = useState(1);
+  const limit = '10';
 
   const { currentUser } = useSelector(
     (state: { user: UserState }) => state.user
@@ -83,6 +88,14 @@ const Profile = () => {
 
       if (data) {
         console.log('PROFILE IMAGE UPLOAD:', data);
+
+        const response = await getNotifications(
+          page.toString(),
+          limit,
+          searchValue
+        );
+
+        dispatch(getNotificationsSuccess(response?.notifications));
         dispatch(loginSuccess(data.user));
 
         Toast.show({

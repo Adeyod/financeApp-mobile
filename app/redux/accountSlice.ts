@@ -13,10 +13,7 @@ const accountSlice = createSlice({
   reducers: {
     getAccountsSuccess(state, action) {
       const accountDetails = action.payload;
-
       state.accountDetails = accountDetails;
-
-      // console.log('accountDetails', accountDetails);
     },
 
     getSingleAccountSuccess(state, action) {

@@ -32,6 +32,7 @@ import SingleAccountTransactions from '@/components/Accounts/SingleAccountTransa
 const Account = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
   // const qu
@@ -63,19 +64,27 @@ const Account = () => {
     'singleAccountTransactionDetails:',
     singleAccountTransactionDetails
   );
-  const [page, setPage] = useState('1');
+  const [page, setPage] = useState(1);
   const [limit, setLimit] = useState('10');
 
-  const handleAccountFetch = async (searchValue: string) => {
+  const totalPages = Math.ceil(
+    singleAccountTotalTransactionsCount / Number(limit)
+  );
+
+  const handleAccountFetch = async (
+    searchValue: string,
+    isSearchRequest = false
+  ) => {
     try {
+      isSearchRequest ? setIsSearching(true) : setLoading(true);
       const response = await getUserSingleAccountTransactions(
         accountNumber[0].account_number,
-        page,
+        page.toString(),
         limit,
         searchValue
       );
 
-      // console.log('SINGLE ACCOUNT TRANSACTIONS:', response);
+      console.log('SINGLE ACCOUNT TRANSACTIONS:', response);
 
       if (response) {
         dispatch(getSingleAccountTransactionsSuccess(response));
@@ -88,21 +97,23 @@ const Account = () => {
         console.error(error);
       }
     } finally {
-      setLoading(false);
+      isSearchRequest ? setIsSearching(false) : setLoading(false);
     }
   };
 
   const debouncedSearchValue = useDebounce(searchValue, 1000);
 
   useEffect(() => {
-    if (debouncedSearchValue || page) {
-      handleAccountFetch(debouncedSearchValue);
+    if (debouncedSearchValue) {
+      handleAccountFetch(debouncedSearchValue, true);
     }
-  }, [debouncedSearchValue, page]);
+  }, [debouncedSearchValue]);
 
   useEffect(() => {
-    handleAccountFetch(searchValue);
-  }, []);
+    if (!debouncedSearchValue) {
+      handleAccountFetch(searchValue);
+    }
+  }, [page, limit]);
 
   const handleKeyPress = (
     e: NativeSyntheticEvent<TextInputKeyPressEventData>
@@ -169,11 +180,42 @@ const Account = () => {
               <Text style={styles.accountTextStyle}>
                 Single Account Transactions
               </Text>
-              <SingleAccountTransactions
-                singleAccountTransactionDetails={
-                  singleAccountTransactionDetails
-                }
-              />
+
+              {!isSearching && (
+                <SingleAccountTransactions
+                  singleAccountTransactionDetails={
+                    singleAccountTransactionDetails
+                  }
+                />
+              )}
+
+              {!isSearching && (
+                <View style={styles.isSearchContainerStyle}>
+                  <View style={styles.pageButtonsContainerStyle}>
+                    {page > 1 && (
+                      <View style={styles.singleButtonContainerStyle}>
+                        <Pressable onPress={() => setPage(page - 1)}>
+                          <Text style={styles.textStyle}>Previous</Text>
+                        </Pressable>
+                      </View>
+                    )}
+
+                    {page < totalPages && (
+                      <View style={styles.singleButtonContainerStyle}>
+                        <Pressable onPress={() => setPage(page + 1)}>
+                          <Text style={styles.textStyle}>Next</Text>
+                        </Pressable>
+                      </View>
+                    )}
+                  </View>
+
+                  <View>
+                    <Text>
+                      Page {page} of {totalPages}{' '}
+                    </Text>
+                  </View>
+                </View>
+              )}
             </View>
           </View>
         </RefreshWrapper>
@@ -204,5 +246,28 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textDecorationLine: 'underline',
     fontStyle: 'italic',
+  },
+  singleButtonContainerStyle: {
+    backgroundColor: Colors.colors.primary,
+    color: 'white',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginBottom: 20,
+    marginLeft: 20,
+    borderRadius: 10,
+  },
+  pageButtonsContainerStyle: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 20,
+  },
+  isSearchContainerStyle: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    paddingRight: 20,
+  },
+  textStyle: {
+    color: 'white',
   },
 });

@@ -13,7 +13,7 @@ import { Colors } from '@/constants/Colors';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import CreditOptions from '@/components/CreditOptions';
 import LoadingIndicator from '@/components/LoadingIndicator';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   Account,
   AccountState,
@@ -30,8 +30,10 @@ import { router } from 'expo-router';
 import axios from 'axios';
 import useApi from '@/hooks/apiCalls';
 import Toast from 'react-native-toast-message';
+import { getNotificationsSuccess } from '../redux/notificationSlice';
 
 const FundFlow = () => {
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [amLoading, setAmLoading] = useState(false);
@@ -44,8 +46,16 @@ const FundFlow = () => {
     last_name: '',
   });
 
-  const { makeTransferToFundFlowAccount, getFundFlowReceivingAccountName } =
-    useApi();
+  const {
+    makeTransferToFundFlowAccount,
+    getFundFlowReceivingAccountName,
+
+    getNotifications,
+  } = useApi();
+
+  const [searchValue] = useState('');
+  const [page] = useState(1);
+  const limit = '10';
 
   const [selectedAccountNumber, setSelectedAccountNumber] =
     useState<Account | null>(null);
@@ -208,6 +218,14 @@ const FundFlow = () => {
 
       if (response.status === 200 && response?.data?.success === true) {
         router.push('/');
+
+        const response = await getNotifications(
+          page.toString(),
+          limit,
+          searchValue
+        );
+
+        dispatch(getNotificationsSuccess(response?.notifications));
         return;
       }
     } catch (error: unknown) {
